@@ -1,0 +1,4 @@
+.env
+.venv/
+__pycache__/
+live_demo_state.json
