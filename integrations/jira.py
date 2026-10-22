@@ -51,6 +51,7 @@ class JiraConnector:
 
     def list_users(self):
         """Yield every user on the Jira site as a person record (email only if their profile shares it)."""
+        emails = known_account_emails(self.base_url)
         start = 0
         while True:
             users = self._request("/rest/api/3/users/search", {"startAt": start, "maxResults": 100})
@@ -58,7 +59,7 @@ class JiraConnector:
                 yield UnifiedRecord(
                     source=SourceRef("jira", self.account_id, "user", user["accountId"]),
                     kind="person", title=user.get("displayName"),
-                    attributes={"email": (user.get("emailAddress") or "").lower() or None,
+                    attributes={"email": (user.get("emailAddress") or "").lower() or emails.get(user["accountId"]),
                                 "account_type": user.get("accountType"), "active": user.get("active"),
                                 "is_bot": user.get("accountType") != "atlassian"},
                     raw=user,
@@ -143,6 +144,35 @@ class JiraConnector:
                                for i in items),
                 attributes={"fields": [i.get("field") for i in items]}, raw=change,
             )
+
+
+_ACCOUNT_EMAILS = {}
+
+
+def known_account_emails(base_url):
+    """Account id -> email for every Atlassian credential in .env (JIRA_EMAIL/JIRA_API_TOKEN and
+    JIRA_USER_TOKEN_<NAME>=email:token). /myself returns a user's own email even when their profile
+    hides it from others, so these people can be linked to their Slack/ClickUp identities by email."""
+    base_url = base_url.rstrip("/")
+    if base_url in _ACCOUNT_EMAILS:
+        return _ACCOUNT_EMAILS[base_url]
+    creds = [(os.getenv("JIRA_EMAIL", ""), os.getenv("JIRA_API_TOKEN", ""))]
+    creds += [os.environ[k].partition(":")[::2] for k in sorted(os.environ) if k.startswith("JIRA_USER_TOKEN_")]
+    found = {}
+    for email, token in creds:
+        if not (email.strip() and token.strip()):
+            continue
+        auth = base64.b64encode(f"{email.strip()}:{token.strip()}".encode()).decode()
+        try:
+            with urlopen(Request(f"{base_url}/rest/api/3/myself",
+                                 headers={"Authorization": f"Basic {auth}", "Accept": "application/json"}),
+                         timeout=20) as response:
+                me = json.load(response)
+            found[me["accountId"]] = (me.get("emailAddress") or email).strip().lower()
+        except (HTTPError, URLError, KeyError, ValueError):
+            continue
+    _ACCOUNT_EMAILS[base_url] = found
+    return found
 
 
 def _jira_text(value):
