@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How it works · Message mapping</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#14213d;--muted:#5b6b85;--line:#dfe6f0;--blue:#2f6fed;--teal:#0f9d8f;--amber:#b7791f;--soft:#eef3fd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,Segoe UI,sans-serif}
+main{max-width:1240px;margin:auto;padding:24px 20px 56px}a{color:var(--blue)}
+nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-size:14px}.brand{font-weight:700}.brand span{color:var(--blue)}
+h1{font-size:28px;letter-spacing:-.02em;margin:0 0 4px}h2{font-size:19px;margin:0 0 2px}.cap{color:var(--muted);margin:0 0 12px;font-size:14px}
+section{margin-top:30px}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+svg{width:100%;height:auto;display:block}svg text{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,sans-serif}
+.matrix{display:grid;grid-template-columns:140px repeat(3,1fr);gap:8px}.matrix div{border-radius:10px;padding:10px 12px;font-size:14px}
+.mh{background:transparent;color:var(--muted);font-size:12px!important;text-transform:uppercase;letter-spacing:.07em;font-weight:600;padding-bottom:0!important}
+.mt{background:var(--soft);font-weight:700}.mc{background:#fafbfd;border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-size:14px}
+.chip.x{color:#9a3940;background:#fdf1f2;border-color:#f3d4d7;text-decoration:line-through}.chip.next{color:var(--amber);background:#fdf6e9;border-color:#f1dfb6}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--muted)}
+.tag{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;margin-right:4px}
+.sent{background:#e2f5f1;color:var(--teal)}.rec{background:var(--soft);color:var(--blue)}.men{background:#fcf0dc;color:var(--amber)}
+@media(max-width:760px){.matrix{grid-template-columns:1fr}.mh{display:none}}
+</style></head><body><main>
+<nav><div class="brand">Agent Messaging Intelligence · <span>How it works</span></div><a href="/">← Live dashboard</a></nav>
+<h1>From 4 tools → one map of who talked to whom</h1>
+<p class="cap">Live numbers come straight from our database.</p>
+
+<!-- ============================== 1. END-TO-END FLOW ============================== -->
+<section><h2>① The pipeline</h2><p class="cap">Connect → Collect → Map → Store → Show</p>
+<div class="panel"><svg viewBox="0 0 1200 540" role="img" aria-label="Pipeline diagram">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fed"/></marker>
+  <linearGradient id="db" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#eaf1ff"/><stop offset="1" stop-color="#d9e6ff"/></linearGradient>
+</defs>
+<!-- stage labels -->
+<g font-size="13" font-weight="700" fill="#5b6b85" letter-spacing="1.5">
+  <text x="120" y="22" text-anchor="middle">1 · CONNECT</text><text x="380" y="22" text-anchor="middle">2 · COLLECT</text>
+  <text x="645" y="22" text-anchor="middle">3 · MAP</text><text x="895" y="22" text-anchor="middle">4 · STORE</text><text x="1110" y="22" text-anchor="middle">5 · SHOW</text>
+</g>
+<!-- sources -->
+<g>
+  <rect x="20" y="40" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="72" font-size="19" font-weight="700" fill="#14213d">💬 Slack</text><text id="cnt-slack" x="204" y="72" font-size="18" font-weight="700" fill="#2f6fed" text-anchor="end">—</text>
+  <text x="36" y="100" font-size="13" fill="#5b6b85">🔑 bot key + 5 personal keys</text><text x="36" y="124" font-size="13" fill="#0f9d8f">⚡ instant</text>
+
+  <rect x="20" y="165" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="197" font-size="19" font-weight="700" fill="#14213d">🎫 Jira</text><text id="cnt-jira" x="204" y="197" font-size="18" font-weight="700" fill="#2f6fed" text-anchor="end">—</text>
+  <text x="36" y="225" font-size="13" fill="#5b6b85">🛡️ 1 admin key</text><text x="36" y="249" font-size="13" fill="#5b6b85">⏱ every minute</text>
+
+  <rect x="20" y="290" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="322" font-size="19" font-weight="700" fill="#14213d">📘 Confluence</text><text id="cnt-confluence" x="204" y="322" font-size="18" font-weight="700" fill="#2f6fed" text-anchor="end">—</text>
+  <text x="36" y="350" font-size="13" fill="#5b6b85">🛡️ same admin key</text><text x="36" y="374" font-size="13" fill="#5b6b85">⏱ every minute</text>
+
+  <rect x="20" y="415" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="447" font-size="19" font-weight="700" fill="#14213d">✅ ClickUp</text><text id="cnt-clickup" x="204" y="447" font-size="18" font-weight="700" fill="#2f6fed" text-anchor="end">—</text>
+  <text x="36" y="475" font-size="13" fill="#5b6b85">🔑 5 personal keys</text><text x="36" y="499" font-size="13" fill="#5b6b85">⏱ every minute</text>
+</g>
+<!-- arrows sources -> collect -->
+<g stroke="#2f6fed" stroke-width="2" fill="none" marker-end="url(#arr)">
+  <path d="M220 95 C255 95 260 230 296 260"/><path d="M220 220 C255 220 262 255 296 270"/>
+  <path d="M220 345 C255 345 262 290 296 282"/><path d="M220 470 C255 470 260 310 296 292"/>
+</g>
+<!-- collect -->
+<rect x="300" y="160" width="160" height="230" rx="16" fill="#eef3fd" stroke="#c9d8fb" stroke-width="1.5"/>
+<text x="380" y="215" font-size="34" text-anchor="middle">📥</text>
+<text x="380" y="252" font-size="15" font-weight="700" text-anchor="middle" fill="#14213d">Connectors</text>
+<text x="380" y="276" font-size="13" text-anchor="middle" fill="#5b6b85">ask each tool's</text>
+<text x="380" y="294" font-size="13" text-anchor="middle" fill="#5b6b85">official API for</text>
+<text x="380" y="312" font-size="13" text-anchor="middle" fill="#5b6b85">new &amp; changed</text>
+<text x="380" y="330" font-size="13" text-anchor="middle" fill="#5b6b85">messages</text>
+<path d="M460 275 L522 275" stroke="#2f6fed" stroke-width="2.5" marker-end="url(#arr)"/>
+<!-- map -->
+<rect x="526" y="90" width="238" height="370" rx="16" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+<text x="645" y="124" font-size="15" font-weight="700" text-anchor="middle" fill="#14213d">🧭 Every item becomes</text>
+<g font-size="14">
+  <rect x="546" y="140" width="198" height="34" rx="8" fill="#e2f5f1"/><text x="560" y="162" fill="#0f9d8f" font-weight="700">👤 Sender</text>
+  <rect x="546" y="180" width="198" height="34" rx="8" fill="#eef3fd"/><text x="560" y="202" fill="#2f6fed" font-weight="700">👥 Recipients</text>
+  <rect x="546" y="220" width="198" height="34" rx="8" fill="#fcf0dc"/><text x="560" y="242" fill="#b7791f" font-weight="700">@ Mentions</text>
+  <rect x="546" y="260" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="282" fill="#14213d">📍 Where</text>
+  <rect x="546" y="300" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="322" fill="#14213d">🕒 When</text>
+  <rect x="546" y="340" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="362" fill="#14213d">📝 Text</text>
+  <rect x="546" y="380" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="402" fill="#14213d">🔗 Link to original</text>
+</g>
+<path d="M764 275 L822 275" stroke="#2f6fed" stroke-width="2.5" marker-end="url(#arr)"/>
+<!-- database cylinder -->
+<path d="M826 150 v250 a69 22 0 0 0 138 0 v-250" fill="url(#db)" stroke="#9fbaf6" stroke-width="1.5"/>
+<ellipse cx="895" cy="150" rx="69" ry="22" fill="#f4f8ff" stroke="#9fbaf6" stroke-width="1.5"/>
+<text x="895" y="214" font-size="30" text-anchor="middle">🗄️</text>
+<text x="895" y="250" font-size="15" font-weight="700" text-anchor="middle" fill="#14213d">PostgreSQL</text>
+<text x="895" y="272" font-size="12" text-anchor="middle" fill="#5b6b85">one database</text>
+<text x="895" y="298" font-size="12" text-anchor="middle" fill="#5b6b85">same format for</text>
+<text x="895" y="314" font-size="12" text-anchor="middle" fill="#5b6b85">every tool</text>
+<text id="cnt-total" x="895" y="360" font-size="22" font-weight="700" text-anchor="middle" fill="#2f6fed">—</text>
+<text x="895" y="380" font-size="12" text-anchor="middle" fill="#5b6b85">items stored</text>
+<path d="M964 275 L1022 275" stroke="#2f6fed" stroke-width="2.5" marker-end="url(#arr)"/>
+<!-- dashboard -->
+<rect x="1026" y="150" width="166" height="250" rx="16" fill="#14213d"/>
+<text x="1109" y="186" font-size="14" font-weight="700" text-anchor="middle" fill="#fff">📊 Dashboard</text>
+<rect x="1042" y="202" width="134" height="22" rx="6" fill="#24365e"/><text x="1052" y="217" font-size="11" fill="#9fb8e6">👤 Person ▾   🧰 Tool ▾</text>
+<g fill="#2b3f6b"><rect x="1042" y="234" width="134" height="30" rx="6"/><rect x="1042" y="270" width="134" height="30" rx="6"/><rect x="1042" y="306" width="134" height="30" rx="6"/><rect x="1042" y="342" width="134" height="30" rx="6"/></g>
+<g font-size="10" fill="#cfe0ff"><text x="1050" y="253">Ramu → Pradeep · DM</text><text x="1050" y="289">phani → Tharun · Jira</text><text x="1050" y="325">Pradeep · Confluence</text><text x="1050" y="361">Nikhil → Ramu · task</text></g>
+</svg></div></section>
+
+<!-- ============================== 2. KEYS ============================== -->
+<section><h2>② Keys: who can read what</h2><p class="cap">A key opens only what its owner can already see. Private chats need each person's own key.</p>
+<div class="panel"><svg viewBox="0 0 1200 250" role="img" aria-label="Keys diagram">
+<defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fed"/></marker></defs>
+<g font-size="17" font-weight="700" fill="#14213d" text-anchor="middle"><text x="150" y="28">💬 Slack</text><text x="450" y="28">🎫 Jira</text><text x="750" y="28">📘 Confluence</text><text x="1050" y="28">✅ ClickUp</text></g>
+<!-- avatars -->
+<g font-size="13" font-weight="700" text-anchor="middle">
+  <circle cx="58" cy="72" r="18" fill="#14213d"/><text x="58" y="77" fill="#fff">🤖</text>
+  <g fill="#2f6fed"><circle cx="102" cy="72" r="18"/><circle cx="142" cy="72" r="18"/><circle cx="182" cy="72" r="18"/><circle cx="222" cy="72" r="18"/><circle cx="262" cy="72" r="18"/></g>
+  <g fill="#fff"><text x="102" y="77">P</text><text x="142" y="77">N</text><text x="182" y="77">T</text><text x="222" y="77">R</text><text x="262" y="77">P</text></g>
+  <circle cx="450" cy="72" r="22" fill="#14213d"/><text x="450" y="78" fill="#fff" font-size="16">🛡️</text>
+  <circle cx="750" cy="72" r="22" fill="#14213d"/><text x="750" y="78" fill="#fff" font-size="16">🛡️</text>
+  <g fill="#2f6fed"><circle cx="970" cy="72" r="18"/><circle cx="1010" cy="72" r="18"/><circle cx="1050" cy="72" r="18"/><circle cx="1090" cy="72" r="18"/><circle cx="1130" cy="72" r="18"/></g>
+  <g fill="#fff"><text x="970" y="77">P</text><text x="1010" y="77">N</text><text x="1050" y="77">T</text><text x="1090" y="77">R</text><text x="1130" y="77">P</text></g>
+</g>
+<g font-size="12" fill="#5b6b85" text-anchor="middle"><text x="160" y="110">bot + one key per person</text><text x="450" y="110">one admin key</text><text x="750" y="110">same admin key</text><text x="1050" y="110">one key per person</text></g>
+<g stroke="#2f6fed" stroke-width="2" marker-end="url(#arr2)"><path d="M160 120 V150"/><path d="M450 120 V150"/><path d="M750 120 V150"/><path d="M1050 120 V150"/></g>
+<g><rect x="35" y="156" width="250" height="74" rx="12" fill="#eef3fd"/><rect x="325" y="156" width="250" height="74" rx="12" fill="#eef3fd"/><rect x="625" y="156" width="250" height="74" rx="12" fill="#eef3fd"/><rect x="925" y="156" width="250" height="74" rx="12" fill="#eef3fd"/></g>
+<g font-size="14" text-anchor="middle" fill="#14213d"><text x="160" y="186">channels</text><text x="160" y="208" font-weight="700">+ private DMs 🔒</text>
+<text x="450" y="186">all issues</text><text x="450" y="208" font-weight="700">comments · status</text>
+<text x="750" y="186">all pages</text><text x="750" y="208" font-weight="700">comments · edits</text>
+<text x="1050" y="186">tasks · comments</text><text x="1050" y="208" font-weight="700">+ private chats 🔒</text></g>
+</svg></div></section>
+
+<!-- ============================== 3. ONE MESSAGE ============================== -->
+<section><h2>③ One message, mapped</h2><p class="cap">Real example: a private ClickUp chat between Ramu and Pradeep.</p>
+<div class="panel"><svg viewBox="0 0 1200 330" role="img" aria-label="Message mapping diagram">
+<defs><marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fed"/></marker></defs>
+<!-- chat window -->
+<rect x="20" y="20" width="440" height="290" rx="16" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+<rect x="20" y="20" width="440" height="44" rx="16" fill="#f3f5f9"/><rect x="20" y="48" width="440" height="16" fill="#f3f5f9"/>
+<text x="40" y="48" font-size="14" font-weight="700" fill="#14213d">✅ ClickUp · DM · Pradeep, Ramu 🔒</text>
+<circle cx="52" cy="104" r="16" fill="#b7791f"/><text x="52" y="109" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">P</text>
+<rect x="78" y="86" width="350" height="56" rx="12" fill="#f3f5f9"/>
+<text x="92" y="108" font-size="13" fill="#14213d">Semantic search got slow after 500k</text><text x="92" y="128" font-size="13" fill="#14213d">documents. What should I check?</text>
+<circle cx="428" cy="186" r="16" fill="#0f9d8f"/><text x="428" y="191" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">R</text>
+<rect x="52" y="160" width="350" height="76" rx="12" fill="#e2f5f1" stroke="#0f9d8f" stroke-width="2"/>
+<text x="66" y="183" font-size="13" fill="#14213d">Add an HNSW index on the embedding</text><text x="66" y="203" font-size="13" fill="#14213d">column, run ANALYZE, cap ef_search</text><text x="66" y="223" font-size="13" fill="#14213d">at 64. Drops to ~20ms.</text>
+<text x="66" y="262" font-size="12" fill="#5b6b85">Read with Ramu's key 🔑</text>
+<!-- arrow -->
+<path d="M462 198 C520 198 530 165 588 165" stroke="#2f6fed" stroke-width="2.5" fill="none" marker-end="url(#arr3)"/>
+<text x="525" y="150" font-size="12" font-weight="700" fill="#2f6fed" text-anchor="middle">MAP</text>
+<!-- record -->
+<rect x="592" y="20" width="588" height="290" rx="16" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+<text x="612" y="50" font-size="13" font-weight="700" fill="#5b6b85" letter-spacing="1">STORED RECORD</text>
+<g font-size="14">
+  <rect x="612" y="64" width="548" height="30" rx="7" fill="#e2f5f1"/><text x="624" y="84" fill="#0f9d8f" font-weight="700">👤 Sender</text><text x="780" y="84" fill="#14213d" font-weight="700">Ramu</text>
+  <rect x="612" y="98" width="548" height="30" rx="7" fill="#eef3fd"/><text x="624" y="118" fill="#2f6fed" font-weight="700">👥 Recipients</text><text x="780" y="118" fill="#14213d" font-weight="700">Pradeep</text>
+  <rect x="612" y="132" width="548" height="30" rx="7" fill="#fcf0dc"/><text x="624" y="152" fill="#b7791f" font-weight="700">@ Mentions</text><text x="780" y="152" fill="#5b6b85">none</text>
+  <rect x="612" y="166" width="548" height="30" rx="7" fill="#f3f5f9"/><text x="624" y="186" fill="#14213d">📍 Where</text><text x="780" y="186" fill="#14213d">ClickUp · DM: Pradeep, Ramu</text>
+  <rect x="612" y="200" width="548" height="30" rx="7" fill="#f3f5f9"/><text x="624" y="220" fill="#14213d">🕒 When</text><text x="780" y="220" fill="#14213d">exact date &amp; time</text>
+  <rect x="612" y="234" width="548" height="30" rx="7" fill="#f3f5f9"/><text x="624" y="254" fill="#14213d">📝 Text</text><text x="780" y="254" fill="#14213d">“Add an HNSW index on the embedding…”</text>
+  <rect x="612" y="268" width="548" height="30" rx="7" fill="#f3f5f9"/><text x="624" y="288" fill="#14213d">🔗 Link</text><text x="780" y="288" fill="#2f6fed">open the original in ClickUp ↗</text>
+</g>
+</svg>
+<div class="legend"><span><span class="tag sent">SENT</span> in Ramu's view</span><span><span class="tag rec">RECEIVED</span> in Pradeep's view</span><span><span class="tag men">MENTIONED</span> when someone is @tagged</span></div>
+</div></section>
+
+<!-- ============================== 4. IDENTITY ============================== -->
+<section><h2>④ One person, four accounts</h2><p class="cap">Accounts are linked by email, which is the same in every tool.</p>
+<div class="panel"><svg viewBox="0 0 1200 250" role="img" aria-label="Identity linking diagram">
+<defs><marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fed"/></marker></defs>
+<g stroke="#9fbaf6" stroke-width="2"><path d="M290 55 L470 112"/><path d="M290 195 L470 138"/><path d="M730 112 L910 55"/><path d="M730 138 L910 195"/></g>
+<g><rect x="60" y="25" width="230" height="60" rx="12" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/><rect x="60" y="165" width="230" height="60" rx="12" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+<rect x="910" y="25" width="230" height="60" rx="12" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/><rect x="910" y="165" width="230" height="60" rx="12" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/></g>
+<g font-size="14"><text x="78" y="52" font-weight="700" fill="#14213d">💬 Slack</text><text x="78" y="72" fill="#5b6b85">@ramudhatla</text>
+<text x="78" y="192" font-weight="700" fill="#14213d">🎫 Jira</text><text x="78" y="212" fill="#5b6b85">Ramu</text>
+<text x="928" y="52" font-weight="700" fill="#14213d">📘 Confluence</text><text x="928" y="72" fill="#5b6b85">Ramu</text>
+<text x="928" y="192" font-weight="700" fill="#14213d">✅ ClickUp</text><text x="928" y="212" fill="#5b6b85">Ramu</text></g>
+<rect x="470" y="88" width="260" height="74" rx="37" fill="#14213d"/>
+<text x="600" y="118" font-size="13" fill="#9fb8e6" text-anchor="middle">✉️ ramudhatla@outlook.com</text>
+<text x="600" y="142" font-size="17" font-weight="700" fill="#fff" text-anchor="middle">= Ramu</text>
+<path d="M600 162 V200" stroke="#2f6fed" stroke-width="2.5" marker-end="url(#arr4)"/>
+<rect x="490" y="204" width="220" height="36" rx="10" fill="#eef3fd"/><text x="600" y="227" font-size="13" font-weight="700" fill="#2f6fed" text-anchor="middle">👤 Person filter: all his activity</text>
+</svg></div></section>
+
+<!-- ============================== 5. SAME MODEL ============================== -->
+<section><h2>⑤ Same model in every tool</h2>
+<div class="panel"><div class="matrix">
+  <div class="mh"></div><div class="mh">Conversation</div><div class="mh">Message</div><div class="mh">Recipients</div>
+  <div class="mt">💬 Slack</div><div class="mc">channel · DM · group DM</div><div class="mc">message · thread reply</div><div class="mc">members</div>
+  <div class="mt">🎫 Jira</div><div class="mc">issue</div><div class="mc">comment · status change</div><div class="mc">reporter · assignee · watchers</div>
+  <div class="mt">📘 Confluence</div><div class="mc">page</div><div class="mc">comment · inline comment · edit</div><div class="mc">author · editors · @mentioned</div>
+  <div class="mt">✅ ClickUp</div><div class="mc">task · chat · DM</div><div class="mc">comment · reply · chat message</div><div class="mc">assignees · watchers · members</div>
+</div></div></section>
+
+<!-- ============================== 6. SCOPE ============================== -->
+<section><h2>⑥ Scope</h2>
+<div class="panel chips">
+  <span class="chip">✅ messages</span><span class="chip">✅ DMs &amp; group chats</span><span class="chip">✅ threads &amp; replies</span><span class="chip">✅ comments</span><span class="chip">✅ @mentions</span><span class="chip">✅ assignments</span><span class="chip">✅ status changes</span><span class="chip">✅ page edits</span>
+  <span class="chip x">📞 calls</span><span class="chip x">😀 reactions</span><span class="chip x">📎 attachments</span><span class="chip x">🗑️ deleted messages</span>
+  <span class="chip next">⏭ Outlook · Teams</span><span class="chip next">⏭ Skill graph (AI)</span>
+</div></section>
+
+</main>
+<script>
+(async () => {
+  let total = 0;
+  for (const p of ["slack", "jira", "confluence", "clickup"]) {
+    try {
+      const d = await (await fetch("/api/data?platform=" + p, {cache: "no-store"})).json();
+      const n = Number(d.stats.messages || 0); total += n;
+      document.getElementById("cnt-" + p).textContent = n.toLocaleString();
+    } catch (e) {}
+  }
+  if (total) document.getElementById("cnt-total").textContent = total.toLocaleString();
+})();
+</script>
+</body></html>

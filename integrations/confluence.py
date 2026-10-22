@@ -12,7 +12,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from integrations.jira import _jira_text, _mentions, _timestamp
+from integrations.jira import _jira_text, _mentions, _timestamp, known_account_emails
 from integrations.records import SourceRef, UnifiedRecord
 
 
@@ -58,6 +58,7 @@ class ConfluenceConnector:
 
     def list_users(self):
         """Confluence and Jira share Atlassian accounts; read them once from the site's user directory."""
+        emails = known_account_emails(self.base_url)
         start = 0
         while True:
             users = self._request("/rest/api/3/users/search", {"startAt": start, "maxResults": 100})
@@ -66,7 +67,7 @@ class ConfluenceConnector:
                 yield UnifiedRecord(
                     source=SourceRef("confluence", self.account_id, "user", user["accountId"]),
                     kind="person", title=user.get("displayName"),
-                    attributes={"email": (user.get("emailAddress") or "").lower() or None,
+                    attributes={"email": (user.get("emailAddress") or "").lower() or emails.get(user["accountId"]),
                                 "account_type": user.get("accountType"),
                                 "is_bot": user.get("accountType") != "atlassian"},
                     raw=user,
