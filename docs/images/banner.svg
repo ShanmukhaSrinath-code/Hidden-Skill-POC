@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="Agent Messaging Intelligence" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif">
+<title>Agent Messaging Intelligence</title>
+<rect x="1" y="1" width="1198" height="318" rx="20" fill="#ffffff" stroke="#dfe6f0" stroke-width="2"/>
+<defs><linearGradient id="bg" x1="0" x2="1"><stop offset="0" stop-color="#f4f8ff"/><stop offset="1" stop-color="#eef3fd"/></linearGradient>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fed"/></marker></defs>
+<rect x="1" y="1" width="1198" height="318" rx="20" fill="url(#bg)"/>
+<rect x="60" y="58" width="190" height="46" rx="12" fill="#ffffff" stroke="#dfe6f0" stroke-width="1.5"/><rect x="60" y="58" width="8" height="46" rx="4" fill="#4a154b"/><text x="84" y="88" font-size="18" font-weight="700" fill="#14213d">💬  Slack</text><path d="M250 81 C330 81 330 160 400 160" stroke="#9fbaf6" stroke-width="2" fill="none"/><rect x="60" y="116" width="190" height="46" rx="12" fill="#ffffff" stroke="#dfe6f0" stroke-width="1.5"/><rect x="60" y="116" width="8" height="46" rx="4" fill="#0052cc"/><text x="84" y="146" font-size="18" font-weight="700" fill="#14213d">🎫  Jira</text><path d="M250 139 C330 139 330 160 400 160" stroke="#9fbaf6" stroke-width="2" fill="none"/><rect x="60" y="174" width="190" height="46" rx="12" fill="#ffffff" stroke="#dfe6f0" stroke-width="1.5"/><rect x="60" y="174" width="8" height="46" rx="4" fill="#1868db"/><text x="84" y="204" font-size="18" font-weight="700" fill="#14213d">📘  Confluence</text><path d="M250 197 C330 197 330 160 400 160" stroke="#9fbaf6" stroke-width="2" fill="none"/><rect x="60" y="232" width="190" height="46" rx="12" fill="#ffffff" stroke="#dfe6f0" stroke-width="1.5"/><rect x="60" y="232" width="8" height="46" rx="4" fill="#7b68ee"/><text x="84" y="262" font-size="18" font-weight="700" fill="#14213d">✅  ClickUp</text><path d="M250 255 C330 255 330 160 400 160" stroke="#9fbaf6" stroke-width="2" fill="none"/>
+<circle cx="440" cy="160" r="46" fill="#2f6fed"/><text x="440" y="173" font-size="34" text-anchor="middle">🧭</text>
+<path d="M486 160 L546 160" stroke="#2f6fed" stroke-width="3" marker-end="url(#a)"/>
+<text x="580" y="118" font-size="40" font-weight="800" fill="#14213d" letter-spacing="-1">Agent Messaging Intelligence</text>
+<text x="582" y="160" font-size="20" fill="#5b6b85">Who talked to whom, about what, across every tool.</text>
+<g font-size="15" font-weight="600">
+<rect x="582" y="190" width="104" height="34" rx="17" fill="#e2f5f1"/><text x="634" y="212" text-anchor="middle" fill="#0f9d8f">👤 Sender</text>
+<rect x="696" y="190" width="132" height="34" rx="17" fill="#eef3fd"/><text x="762" y="212" text-anchor="middle" fill="#2f6fed">👥 Recipients</text>
+<rect x="838" y="190" width="124" height="34" rx="17" fill="#fcf0dc"/><text x="900" y="212" text-anchor="middle" fill="#b7791f">@ Mentions</text>
+<rect x="972" y="190" width="160" height="34" rx="17" fill="#f3f5f9"/><text x="1052" y="212" text-anchor="middle" fill="#14213d">🔗 Source link</text>
+</g>
+<text x="582" y="262" font-size="15" fill="#5b6b85">🗄️ one PostgreSQL database   ·   📊 live dashboard   ·   👤 one identity per person</text>
+</svg>
