@@ -20,8 +20,11 @@ svg{width:100%;height:auto;display:block}svg text{font-family:Inter,ui-sans-seri
 @media(max-width:760px){.matrix{grid-template-columns:1fr}.mh{display:none}}
 </style></head><body><main>
 <nav><div class="brand">Agent Messaging Intelligence · <span>How it works</span></div><a href="/">← Live dashboard</a></nav>
-<h1>From 4 tools → one map of who talked to whom</h1>
+<h1>From 4 tools → one map of who talked to whom → a skill graph</h1>
 <p class="cap">Live numbers come straight from our database.</p>
+
+<section><h2>⓪ The whole system</h2><p class="cap">Collect → Phase 1 (one EMP_ID per person, canonical records) → Phase 2 (local-AI agents → skill graph)</p>
+<div class="panel"><img src="/docs/images/architecture.svg" alt="System architecture" style="width:100%;display:block"></div></section>
 
 <!-- ============================== 1. END-TO-END FLOW ============================== -->
 <section><h2>① The pipeline</h2><p class="cap">Connect → Collect → Map → Store → Show</p>
@@ -175,8 +178,14 @@ svg{width:100%;height:auto;display:block}svg text{font-family:Inter,ui-sans-seri
 <rect x="490" y="204" width="220" height="36" rx="10" fill="#eef3fd"/><text x="600" y="227" font-size="13" font-weight="700" fill="#2f6fed" text-anchor="middle">👤 Person filter: all his activity</text>
 </svg></div></section>
 
+<section><h2>⑤ Agents 1–4: from a thread to skill evidence</h2><p class="cap">Runs on a local model through Ollama; nothing leaves this machine.</p>
+<div class="panel"><img src="/docs/images/agents.svg" alt="Agents 1-4 on one real thread" style="width:100%;display:block"></div></section>
+
+<section><h2>⑥ The skill graph</h2><p class="cap">Declared skills (HRMS / resume) vs skills discovered from validated help. Open <a href="/skills">/skills</a> for the live version.</p>
+<div class="panel"><img src="/docs/images/skill-graph.svg" alt="Employee skill graph" style="width:100%;display:block"></div></section>
+
 <!-- ============================== 5. SAME MODEL ============================== -->
-<section><h2>⑤ Same model in every tool</h2>
+<section><h2>⑦ Same model in every tool</h2>
 <div class="panel"><div class="matrix">
   <div class="mh"></div><div class="mh">Conversation</div><div class="mh">Message</div><div class="mh">Recipients</div>
   <div class="mt">💬 Slack</div><div class="mc">channel · DM · group DM</div><div class="mc">message · thread reply</div><div class="mc">members</div>
@@ -186,11 +195,11 @@ svg{width:100%;height:auto;display:block}svg text{font-family:Inter,ui-sans-seri
 </div></div></section>
 
 <!-- ============================== 6. SCOPE ============================== -->
-<section><h2>⑥ Scope</h2>
+<section><h2>⑧ Scope</h2>
 <div class="panel chips">
   <span class="chip">✅ messages</span><span class="chip">✅ DMs &amp; group chats</span><span class="chip">✅ threads &amp; replies</span><span class="chip">✅ comments</span><span class="chip">✅ @mentions</span><span class="chip">✅ assignments</span><span class="chip">✅ status changes</span><span class="chip">✅ page edits</span>
   <span class="chip x">📞 calls</span><span class="chip x">😀 reactions</span><span class="chip x">📎 attachments</span><span class="chip x">🗑️ deleted messages</span>
-  <span class="chip next">⏭ Outlook · Teams</span><span class="chip next">⏭ Skill graph (AI)</span>
+  <span class="chip">✅ one EMP_ID per person</span><span class="chip">✅ local-AI skill graph</span><span class="chip next">⏭ Outlook · Teams</span><span class="chip next">⏭ Neo4j · skill growth over time</span>
 </div></section>
 
 </main>

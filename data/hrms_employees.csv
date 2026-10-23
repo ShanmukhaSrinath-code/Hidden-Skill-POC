@@ -1,0 +1,6 @@
+emp_id,email,full_name,role,department,manager_emp_id,declared_skills,resume_skills,job_description
+EMP_1001,oletiphani@outlook.com,Phani,Engineering Manager,Engineering,,Project Management;Stakeholder Communication;Agile Delivery,People Leadership;Incident Management;Roadmapping,Leads the platform engineering team; owns delivery planning and incident escalation.
+EMP_1002,nikhil12319212026@outlook.com,Nikhil,ML Engineer,AI Platform,EMP_1001,Python;Machine Learning;PyTorch,RAG;LLM Evaluation;Data Pipelines,Builds retrieval and ranking models for the AI assistant.
+EMP_1003,allatharun@outlook.com,Tharun,DevOps Engineer,Platform,EMP_1001,Kubernetes;CI/CD;Docker,Helm;Prometheus;Terraform,Runs CI/CD pipelines and Kubernetes clusters for all services.
+EMP_1004,ramudhatla@outlook.com,Ramu,Frontend Developer,Web,EMP_1001,React;TypeScript;CSS,Next.js;UI Testing,Builds the customer-facing web application.
+EMP_1005,pradeepkarni09@outlook.com,Pradeep,QA Engineer,Quality,EMP_1001,Test Automation;Selenium;Manual Testing,Documentation;Load Testing,Owns regression and release testing for web and API.

@@ -1,4 +1,7 @@
 .env
 .venv/
+temp_auto_push.bat
 __pycache__/
 live_demo_state.json
+.gitignore
+branch_structure.json

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skill graph · Agent Messaging Intelligence</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#14213d;--muted:#5b6b85;--line:#e3e8f0;--blue:#2f6fed;--soft:#eef3fd;--teal:#0f9d8f;--tealsoft:#e2f5f1;--amber:#b7791f;--ambersoft:#fcf0dc;--red:#b4434b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,ui-sans-serif,system-ui,Segoe UI,sans-serif}
+main{max-width:1320px;margin:auto;padding:22px 20px 56px}a{color:var(--blue)}
+nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px}nav .links a{margin-left:16px}
+h1{font-size:26px;letter-spacing:-.02em;margin:0}h2{font-size:17px;margin:0 0 10px}.sub{color:var(--muted);margin:2px 0 16px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi b{display:block;font-size:24px;letter-spacing:-.02em}.kpi span{color:var(--muted);font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+.people{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.people button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer}
+.people button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.profile{display:grid;grid-template-columns:420px 1fr;gap:18px}
+.who{display:flex;gap:12px;align-items:center;margin-bottom:10px}.av{width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px}
+.who small{color:var(--muted)}.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.col h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+.skill{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer;background:#fff}
+.skill:hover{border-color:#b9cdf8}.skill.sel{outline:2px solid var(--blue)}
+.skill.disc{background:var(--ambersoft);border-color:#f1dfb6}.skill .top{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.skill .meta{font-size:12px;color:var(--muted)}.bar{height:5px;background:#edf1f7;border-radius:4px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--blue)}
+.skill.disc .bar i{background:var(--amber)}.none{color:var(--muted);font-size:12px}
+.ev{border-left:3px solid var(--line);padding:6px 10px;margin:8px 0}.ev.explicit{border-color:var(--teal)}.ev.implicit{border-color:var(--blue)}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px;margin-right:6px}.t-exp{background:var(--tealsoft);color:var(--teal)}.t-imp{background:var(--soft);color:var(--blue)}.t-disc{background:var(--ambersoft);color:var(--amber)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+select,input{font:inherit;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:#fff}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.rank{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--soft);color:var(--blue);font-weight:700;font-size:12px}
+.status{display:flex;gap:10px;flex-wrap:wrap}.status span{background:#f3f5f9;border-radius:999px;padding:4px 10px;font-size:12px}
+.empty{color:var(--muted);padding:20px;text-align:center}
+@media(max-width:1000px){.profile,.grid2,.cols{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><main>
+<nav><b>Agent Messaging Intelligence · <span style="color:var(--blue)">Skill graph</span></b><span class="links"><a href="/">Live dashboard</a><a href="/how-it-works">How it works</a></span></nav>
+<h1>Living skill graph</h1>
+<p class="sub">Explicit skills from HRMS/resume, plus skills <b>discovered</b> from validated help in Slack, Jira, Confluence and ClickUp. Every skill links back to its evidence.</p>
+<div class="kpis" id="kpis"></div>
+
+<section class="card"><h2>👤 Employee skill profile</h2><div class="people" id="people"></div><div id="profile" class="empty">Loading…</div></section>
+
+<div class="grid2">
+  <section class="card"><h2>🔎 Expert finder</h2>
+    <select id="skillPick"></select>
+    <div id="experts" style="margin-top:10px"></div></section>
+  <section class="card"><h2>🤝 Who people go to for help</h2><div id="edges"></div></section>
+</div>
+
+<section class="card"><h2>🧭 Hidden skills (outside the declared profile)</h2><div id="hidden"></div></section>
+<section class="card"><h2>⚙️ Agent pipeline</h2><div id="pipeline" class="status"></div></section>
+</main>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const day=v=>v?new Date(v).toLocaleDateString([], {month:'short',day:'numeric'}):'—';
+let D=null, current=null, selected=null;
+function bar(c){return `<div class="bar"><i style="width:${Math.round((c||0)*100)}%"></i></div>`}
+function skillCard(s){
+  const disc=s.kind==='discovered';
+  const meta=s.evidence_count?`${s.evidence_count} evidence · ${s.explicit_count} confirmed · confidence ${Number(s.confidence).toFixed(2)}`:`declared (${esc(s.declared_source||'hrms')}), no evidence yet`;
+  return `<div class="skill ${disc?'disc':''} ${selected===s.skill_id?'sel':''}" data-skill="${esc(s.skill_id)}"><div class="top"><span>${esc(s.skill)}</span><span class="meta">${esc(s.category)}</span></div><div class="meta">${meta}</div>${s.evidence_count?bar(s.confidence):''}</div>`}
+function renderProfile(){
+  const e=D.employees.find(x=>x.emp_id===current); if(!e){document.getElementById('profile').innerHTML='<div class="empty">No employees yet. Run identity resolution.</div>';return}
+  const explicit=e.skills.filter(s=>s.kind==='explicit').sort((a,b)=>b.evidence_count-a.evidence_count);
+  const disc=e.skills.filter(s=>s.kind==='discovered').sort((a,b)=>(b.confidence||0)-(a.confidence||0));
+  const sel=e.skills.find(s=>s.skill_id===selected)||e.skills.filter(s=>s.evidence_count).sort((a,b)=>b.evidence_count-a.evidence_count)[0];
+  selected=sel?sel.skill_id:null;
+  document.getElementById('profile').innerHTML=`<div class="profile"><div>
+    <div class="who"><div class="av">${esc(e.name[0])}</div><div><b>${esc(e.name)}</b> · ${esc(e.emp_id)}<br><small>${esc(e.role||'')} · ${esc(e.department||'')}</small></div></div>
+    ${graph(e)}</div><div>
+    <div class="cols"><div class="col"><h3>Explicit (declared)</h3>${explicit.map(skillCard).join('')||'<div class="none">none</div>'}</div>
+    <div class="col"><h3>Discovered from work</h3>${disc.map(skillCard).join('')||'<div class="none">No skills outside the profile yet.</div>'}</div></div>
+    <div style="margin-top:12px">${sel&&sel.evidence.length?`<h3 style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">Evidence · ${esc(sel.skill)}</h3>`+sel.evidence.map(v=>`<div class="ev ${v.validation}"><span class="tag ${v.validation==='explicit'?'t-exp':'t-imp'}">${v.validation==='explicit'?'CONFIRMED':(v.validation==='outcome'?'OUTCOME + JUDGED ':'JUDGED ')+v.score+'/10'}</span><b>${esc(v.topic||sel.skill)}</b> · ${esc(v.source)} · ${day(v.occurred_at)}${v.requester?` · helped <b>${esc(v.requester)}</b>`:''}<br><span class="meta" style="color:var(--muted)">${esc(v.signal||'')}</span> ${v.url?`<a href="${esc(v.url)}" target="_blank" rel="noopener">open source ↗</a>`:''} <span class="meta" style="color:#9aa6ba">${esc(v.evidence_id)}</span></div>`).join(''):'<div class="none">Select a skill with evidence to see the messages behind it.</div>'}</div>
+  </div></div>`;
+  document.querySelectorAll('.skill').forEach(el=>el.onclick=()=>{selected=el.dataset.skill;renderProfile()});
+}
+function graph(e){
+  const sk=e.skills.filter(s=>s.evidence_count||s.kind==='explicit').slice(0,14), n=sk.length||1, cx=200, cy=165, r=118;
+  const nodes=sk.map((s,i)=>{const a=-Math.PI/2+2*Math.PI*i/n, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a), size=10+Math.min(14,(s.evidence_count||0)*4);
+    const col=s.kind==='discovered'?'#b7791f':(s.evidence_count?'#2f6fed':'#c3cddd');
+    const lx=cx+(r+28)*Math.cos(a), anchor=Math.cos(a)>0.3?'start':(Math.cos(a)<-0.3?'end':'middle');
+    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${col}" stroke-width="${s.evidence_count?2:1}" stroke-dasharray="${s.evidence_count?'':'4 4'}"/><circle cx="${x}" cy="${y}" r="${size}" fill="${col}"/><text x="${x}" y="${y+4}" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">${s.evidence_count||''}</text><text x="${lx}" y="${cy+(r+28)*Math.sin(a)+4}" font-size="11" fill="#14213d" text-anchor="${anchor}">${esc(s.skill.length>18?s.skill.slice(0,17)+'…':s.skill)}</text>`}).join('');
+  return `<svg viewBox="-40 0 480 330" style="width:100%;height:auto">${nodes}<circle cx="${cx}" cy="${cy}" r="38" fill="#14213d"/><text x="${cx}" y="${cy-2}" fill="#fff" font-size="13" font-weight="700" text-anchor="middle">${esc(e.name)}</text><text x="${cx}" y="${cy+14}" fill="#9fb8e6" font-size="10" text-anchor="middle">${esc(e.emp_id)}</text></svg>
+  <div class="meta" style="font-size:12px;color:var(--muted)"><span class="tag" style="background:#2f6fed;color:#fff">●</span>explicit with evidence <span class="tag" style="background:#b7791f;color:#fff">●</span>discovered <span class="tag" style="background:#c3cddd;color:#fff">●</span>declared, no evidence · number = evidence count</div>`}
+function renderExperts(){
+  const id=document.getElementById('skillPick').value, s=D.experts.find(x=>x.skill_id===id);
+  document.getElementById('experts').innerHTML=s?`<table><tr><th>#</th><th>Person</th><th>Kind</th><th>Evidence</th><th>Confidence</th></tr>${s.experts.map(x=>`<tr><td><span class="rank">${x.rank}</span></td><td><b>${esc(x.name)}</b><br><small style="color:var(--muted)">${esc(x.emp_id)} · ${esc(x.role)}</small></td><td>${x.kind==='discovered'?'<span class="tag t-disc">DISCOVERED</span>':'<span class="tag t-imp">DECLARED</span>'}</td><td>${x.evidence_count} (${x.explicit_count} confirmed)</td><td>${Number(x.confidence).toFixed(2)}${bar(x.confidence)}</td></tr>`).join('')}</table>`:'<div class="empty">No validated evidence yet.</div>'}
+function render(){
+  const k=D.kpis;
+  document.getElementById('kpis').innerHTML=[['Employees',k.employees],['Skills with evidence',k.skills_with_evidence],['Validated evidence',k.evidence],['Hidden skills found',k.discovered],['Threads analysed',`${k.threads_done}/${k.threads_total}`]].map(([l,v])=>`<div class="kpi"><b>${esc(v)}</b><span>${l}</span></div>`).join('');
+  if(!current&&D.employees.length)current=D.employees[0].emp_id;
+  document.getElementById('people').innerHTML=D.employees.map(e=>`<button class="${e.emp_id===current?'on':''}" data-emp="${esc(e.emp_id)}">${esc(e.name)} · ${esc(e.role||'')}</button>`).join('');
+  document.querySelectorAll('#people button').forEach(b=>b.onclick=()=>{current=b.dataset.emp;selected=null;render()});
+  renderProfile();
+  const pick=document.getElementById('skillPick'), keep=pick.value;
+  pick.innerHTML=D.experts.map(s=>`<option value="${esc(s.skill_id)}">${esc(s.skill)} (${s.experts.length})</option>`).join('')||'<option>No evidence yet</option>';
+  if(keep&&D.experts.some(s=>s.skill_id===keep))pick.value=keep; pick.onchange=renderExperts; renderExperts();
+  document.getElementById('edges').innerHTML=D.edges.length?`<table><tr><th>Asked by</th><th></th><th>Helped by</th><th>Times</th><th>Skills</th></tr>${D.edges.map(x=>`<tr><td>${esc(x.requester)}</td><td>→</td><td><b>${esc(x.helper)}</b></td><td>${x.times_helped}</td><td>${esc(x.skills.join(', '))}</td></tr>`).join('')}</table>`:'<div class="empty">No validated help yet.</div>';
+  document.getElementById('hidden').innerHTML=D.hidden.length?`<table><tr><th>Person</th><th>Declared role</th><th>Discovered skill</th><th>Evidence</th><th>Asked by</th><th>Confidence</th></tr>${D.hidden.map(x=>`<tr><td><b>${esc(x.name)}</b> · ${esc(x.emp_id)}</td><td>${esc(x.role)}</td><td><span class="tag t-disc">${esc(x.skill)}</span></td><td>${x.evidence_count} (${x.explicit_count} confirmed)</td><td>${esc(x.requesters.join(', ')||'—')}</td><td>${Number(x.confidence).toFixed(2)}</td></tr>`).join('')}</table>`:'<div class="empty">No skills found outside declared profiles yet.</div>';
+  const p=D.pipeline;document.getElementById('pipeline').innerHTML=Object.entries(p.status).map(([k,v])=>`<span>${esc(k)}: <b>${v}</b></span>`).join('')+`<span>Agent 1: <b>${esc(p.models.agent1)}</b></span><span>Agents 2–3: <b>${esc(p.models.agent2)}</b></span><span>Agent 4: <b>deterministic writer</b></span><span>Last run: <b>${p.last_run?new Date(p.last_run).toLocaleString():'—'}</b></span>`;
+}
+async function load(){try{const r=await fetch('/api/skills',{cache:'no-store'});D=await r.json();if(!r.ok)throw Error(D.error);render()}catch(e){document.getElementById('profile').innerHTML=`<div class="empty">${esc(e.message)}<br>Run: python -m integrations.skills</div>`}}
+load();setInterval(load,15000);
+</script></body></html>
