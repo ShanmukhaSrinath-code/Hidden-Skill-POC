@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1248 588" width="1248" height="588" role="img" aria-label="Pipeline: connect, collect, map, store, show" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif">
+<title>Pipeline: connect, collect, map, store, show</title>
+<rect x="1" y="1" width="1246" height="586" rx="20" fill="#ffffff" stroke="#dfe6f0" stroke-width="2"/>
+<g transform="translate(24,24)">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fed"/></marker>
+  <linearGradient id="db" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#eaf1ff"/><stop offset="1" stop-color="#d9e6ff"/></linearGradient>
+</defs>
+<!-- stage labels -->
+<g font-size="13" font-weight="700" fill="#5b6b85" letter-spacing="1.5">
+  <text x="120" y="22" text-anchor="middle">1 · CONNECT</text><text x="380" y="22" text-anchor="middle">2 · COLLECT</text>
+  <text x="645" y="22" text-anchor="middle">3 · MAP</text><text x="895" y="22" text-anchor="middle">4 · STORE</text><text x="1110" y="22" text-anchor="middle">5 · SHOW</text>
+</g>
+<!-- sources -->
+<g>
+  <rect x="20" y="40" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="72" font-size="19" font-weight="700" fill="#14213d">💬 Slack</text>
+  <text x="36" y="100" font-size="13" fill="#5b6b85">🔑 bot key + 5 personal keys</text><text x="36" y="124" font-size="13" fill="#0f9d8f">⚡ instant</text>
+
+  <rect x="20" y="165" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="197" font-size="19" font-weight="700" fill="#14213d">🎫 Jira</text>
+  <text x="36" y="225" font-size="13" fill="#5b6b85">🛡️ 1 admin key</text><text x="36" y="249" font-size="13" fill="#5b6b85">⏱ every minute</text>
+
+  <rect x="20" y="290" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="322" font-size="19" font-weight="700" fill="#14213d">📘 Confluence</text>
+  <text x="36" y="350" font-size="13" fill="#5b6b85">🛡️ same admin key</text><text x="36" y="374" font-size="13" fill="#5b6b85">⏱ every minute</text>
+
+  <rect x="20" y="415" width="200" height="110" rx="14" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+  <text x="36" y="447" font-size="19" font-weight="700" fill="#14213d">✅ ClickUp</text>
+  <text x="36" y="475" font-size="13" fill="#5b6b85">🔑 5 personal keys</text><text x="36" y="499" font-size="13" fill="#5b6b85">⏱ every minute</text>
+</g>
+<!-- arrows sources -> collect -->
+<g stroke="#2f6fed" stroke-width="2" fill="none" marker-end="url(#arr)">
+  <path d="M220 95 C255 95 260 230 296 260"/><path d="M220 220 C255 220 262 255 296 270"/>
+  <path d="M220 345 C255 345 262 290 296 282"/><path d="M220 470 C255 470 260 310 296 292"/>
+</g>
+<!-- collect -->
+<rect x="300" y="160" width="160" height="230" rx="16" fill="#eef3fd" stroke="#c9d8fb" stroke-width="1.5"/>
+<text x="380" y="215" font-size="34" text-anchor="middle">📥</text>
+<text x="380" y="252" font-size="15" font-weight="700" text-anchor="middle" fill="#14213d">Connectors</text>
+<text x="380" y="276" font-size="13" text-anchor="middle" fill="#5b6b85">ask each tool's</text>
+<text x="380" y="294" font-size="13" text-anchor="middle" fill="#5b6b85">official API for</text>
+<text x="380" y="312" font-size="13" text-anchor="middle" fill="#5b6b85">new &amp; changed</text>
+<text x="380" y="330" font-size="13" text-anchor="middle" fill="#5b6b85">messages</text>
+<path d="M460 275 L522 275" stroke="#2f6fed" stroke-width="2.5" marker-end="url(#arr)"/>
+<!-- map -->
+<rect x="526" y="90" width="238" height="370" rx="16" fill="#fff" stroke="#dfe6f0" stroke-width="1.5"/>
+<text x="645" y="124" font-size="15" font-weight="700" text-anchor="middle" fill="#14213d">🧭 Every item becomes</text>
+<g font-size="14">
+  <rect x="546" y="140" width="198" height="34" rx="8" fill="#e2f5f1"/><text x="560" y="162" fill="#0f9d8f" font-weight="700">👤 Sender</text>
+  <rect x="546" y="180" width="198" height="34" rx="8" fill="#eef3fd"/><text x="560" y="202" fill="#2f6fed" font-weight="700">👥 Recipients</text>
+  <rect x="546" y="220" width="198" height="34" rx="8" fill="#fcf0dc"/><text x="560" y="242" fill="#b7791f" font-weight="700">@ Mentions</text>
+  <rect x="546" y="260" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="282" fill="#14213d">📍 Where</text>
+  <rect x="546" y="300" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="322" fill="#14213d">🕒 When</text>
+  <rect x="546" y="340" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="362" fill="#14213d">📝 Text</text>
+  <rect x="546" y="380" width="198" height="34" rx="8" fill="#f3f5f9"/><text x="560" y="402" fill="#14213d">🔗 Link to original</text>
+</g>
+<path d="M764 275 L822 275" stroke="#2f6fed" stroke-width="2.5" marker-end="url(#arr)"/>
+<!-- database cylinder -->
+<path d="M826 150 v250 a69 22 0 0 0 138 0 v-250" fill="url(#db)" stroke="#9fbaf6" stroke-width="1.5"/>
+<ellipse cx="895" cy="150" rx="69" ry="22" fill="#f4f8ff" stroke="#9fbaf6" stroke-width="1.5"/>
+<text x="895" y="214" font-size="30" text-anchor="middle">🗄️</text>
+<text x="895" y="250" font-size="15" font-weight="700" text-anchor="middle" fill="#14213d">PostgreSQL</text>
+<text x="895" y="272" font-size="12" text-anchor="middle" fill="#5b6b85">one database</text>
+<text x="895" y="298" font-size="12" text-anchor="middle" fill="#5b6b85">same format for</text>
+<text x="895" y="314" font-size="12" text-anchor="middle" fill="#5b6b85">every tool</text>
+
+
+<path d="M964 275 L1022 275" stroke="#2f6fed" stroke-width="2.5" marker-end="url(#arr)"/>
+<!-- dashboard -->
+<rect x="1026" y="150" width="166" height="250" rx="16" fill="#14213d"/>
+<text x="1109" y="186" font-size="14" font-weight="700" text-anchor="middle" fill="#fff">📊 Dashboard</text>
+<rect x="1042" y="202" width="134" height="22" rx="6" fill="#24365e"/><text x="1052" y="217" font-size="11" fill="#9fb8e6">👤 Person ▾   🧰 Tool ▾</text>
+<g fill="#2b3f6b"><rect x="1042" y="234" width="134" height="30" rx="6"/><rect x="1042" y="270" width="134" height="30" rx="6"/><rect x="1042" y="306" width="134" height="30" rx="6"/><rect x="1042" y="342" width="134" height="30" rx="6"/></g>
+<g font-size="10" fill="#cfe0ff"><text x="1050" y="253">Ramu → Pradeep · DM</text><text x="1050" y="289">phani → Tharun · Jira</text><text x="1050" y="325">Pradeep · Confluence</text><text x="1050" y="361">Nikhil → Ramu · task</text></g>
+</g>
+</svg>

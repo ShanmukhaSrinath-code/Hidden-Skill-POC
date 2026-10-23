@@ -1,136 +1,225 @@
-# Agent Messaging Intelligence: message ingestion
+<p align="center"><img src="docs/images/banner.svg" alt="Agent Messaging Intelligence: who talked to whom, about what, across Slack, Jira, Confluence and ClickUp" width="100%"></p>
 
-This collects Slack users, user groups, channels, private channels, group DMs and DMs. It also collects messages, thread replies, mentions (@user, @group, @here/@channel, #channel) and reactions, and stores them all in PostgreSQL.
+<p align="center">
+  <b>💬 Slack</b> · <b>🎫 Jira</b> · <b>📘 Confluence</b> · <b>✅ ClickUp</b> &nbsp;→&nbsp; <b>🗄️ PostgreSQL</b> &nbsp;→&nbsp; <b>📊 live dashboard</b>
+  <br>
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#configuration">Configuration</a> ·
+  <a href="#live-demo">Live demo</a> ·
+  <a href="#project-structure">Project structure</a>
+</p>
 
-## Setup
+---
+
+## ✨ At a glance
+
+| | |
+|---|---|
+| 📥 **Collects** | messages, DMs, group chats, thread replies, comments, inline comments, page edits, assignments and status changes |
+| 🧭 **Maps** | every item to **sender → recipients → @mentions**, plus where, when, text and a link to the original |
+| 👤 **Links people** | one person = one email = their Slack, Jira, Confluence and ClickUp accounts |
+| 🗄️ **Stores** | everything in one PostgreSQL database, in the same shape for every tool |
+| 📊 **Shows** | a live stream with **Person** and **Platform** filters, plus an illustrated `/how-it-works` page |
+
+---
+
+<a id="how-it-works"></a>
+
+## 🧭 How it works
+
+<img src="docs/images/pipeline.svg" alt="Pipeline: 4 tools, connectors, mapping, PostgreSQL, dashboard" width="100%">
+
+| Tool | Collected | Updates |
+|---|---|---|
+| 💬 Slack | channels, private channels, DMs, group DMs, threads, mentions | ⚡ instant (Socket Mode) |
+| 🎫 Jira | issues, comments, mentions, assignments, field and status history | ⏱ every 60 s |
+| 📘 Confluence | pages, blog posts, comments, inline comments, edits, inline tasks | ⏱ every 60 s |
+| ✅ ClickUp | tasks, comments and replies, chat channels, DMs, group DMs | ⏱ every 60 s |
+
+### 🔑 Who can read what
+
+<img src="docs/images/access-keys.svg" alt="Keys: Slack and ClickUp need one key per person for private chats; Jira and Confluence use one admin key" width="100%">
+
+> 🔒 A key only opens what its owner can already see. Private chats need each member's own key. Jira and Confluence have no private chats, so one admin key reads everything.
+
+<details><summary><b>Slack scopes</b></summary>
+
+| Source | Read by | Scopes |
+|---|---|---|
+| Public channels | Bot | `channels:read`, `channels:history`, `channels:join` |
+| Private channels | Bot (once invited) or user token | `groups:read`, `groups:history` |
+| Group DMs | User token | `mpim:read`, `mpim:history` |
+| 1:1 DMs | User token only | `im:read`, `im:history` |
+| Users / user groups | Bot | `users:read`, `users:read.email`, `usergroups:read` |
+
+For live DMs, subscribe the Slack app to `message.channels`, `message.groups`, `message.im`, `message.mpim` (bot events) and `message.im`, `message.mpim` (events on behalf of users).
+</details>
+
+### 🧩 One message, mapped
+
+<img src="docs/images/message-mapping.svg" alt="A ClickUp DM from Ramu to Pradeep turned into a stored record with sender, recipients, mentions, where, when, text and link" width="100%">
+
+| Tool | 💭 Conversation | ✉️ Message | 👥 Recipients |
+|---|---|---|---|
+| 💬 Slack | channel · DM · group DM | message · thread reply | members |
+| 🎫 Jira | issue | comment · status change | reporter · assignee · watchers · commenters |
+| 📘 Confluence | page · blog post | comment · inline comment · edit | author · editors · commenters · @mentioned |
+| ✅ ClickUp | task · chat · DM | comment · reply · chat message | creator · assignees · watchers · members |
+
+### 👤 One person, four accounts
+
+<img src="docs/images/identity.svg" alt="Ramu's Slack, Jira, Confluence and ClickUp accounts linked through his email" width="100%">
+
+> Jira and Confluence hide most users' emails, so each person's own Atlassian token is used to read *their own* email. That links all five demo users on every tool.
+
+### 🗄️ Data model
+
+<img src="docs/images/data-model.svg" alt="Code writes Slack tables and unified tables; views summarise them; dashboard reads both" width="100%">
+
+| View | Answers |
+|---|---|
+| `unified_message_map` | each item's sender, recipients and mentions |
+| `unified_person_messages` | everything a person **sent**, **received** or was **mentioned** in |
+
+---
+
+<a id="quick-start"></a>
+
+## 🚀 Quick start
 
 ```powershell
+# 1 · install
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install slack_sdk "psycopg[binary]" python-dotenv
-```
 
-Write `.env` (it is gitignored):
-
-```
-SLACK_BOT_TOKEN=xoxb-...
-SLACK_USER_TOKENS=xoxp-...,xoxp-...   # optional, one per member who authorizes DM/group-DM collection
-SLACK_APP_TOKEN=xapp-...              # optional; enables Socket Mode event ingestion
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/slack_intelligence
-LOOKBACK_DAYS=7                        # optional re-scan window for new thread replies, edits and reactions
-```
-
-Start PostgreSQL. With Docker Desktop running:
-
-```powershell
+# 2 · database (Docker Desktop running)
 docker run -d --name slack-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=slack_intelligence -p 5432:5432 -v slack-pg-data:/var/lib/postgresql/data postgres:16
-```
 
-## Run
+# 3 · keys → create .env (see Configuration)
 
-```powershell
-.\.venv\Scripts\python.exe ingest.py --check   # shows which conversations each token can read
-.\.venv\Scripts\python.exe ingest.py           # creates tables (schema.sql), then does a full or incremental sync
-```
-
-The script can be re-run safely. Messages are upserted, and each conversation resumes from its checkpoint minus `LOOKBACK_DAYS`. Conversations that can't be read are recorded in `ingestion_checkpoints` along with the reason.
-
-## Live mapping dashboard
-
-Start the dashboard in a second terminal after PostgreSQL is running:
-
-```powershell
+# 4 · run → http://127.0.0.1:8000
 .\.venv\Scripts\python.exe dashboard.py
 ```
 
-Open <http://127.0.0.1:8000>. The dashboard polls PostgreSQL every two seconds. With `SLACK_APP_TOKEN` configured and Slack message event subscriptions enabled, it performs an initial backfill and then stores incoming Socket Mode message and reaction events. Without the app token, it falls back to periodic ingestion every 60 seconds. Both modes use the configured bot and user tokens and only collect conversations those tokens can access. Set `SLACK_SYNC_INTERVAL_SECONDS` to change the fallback interval (minimum 30 seconds), or set `SLACK_AUTO_SYNC=false` to disable Slack collection. Set `DASHBOARD_HOST` or `DASHBOARD_PORT` to change the local bind address or port.
+The dashboard creates the tables, backfills Slack, then keeps every enabled tool in sync.
 
-## Slack access model
+---
 
-| Source | Read by | Scopes needed |
-| --- | --- | --- |
-| Public channels | Bot | `channels:read`, `channels:history`, `channels:join` (lets the bot join automatically) |
-| Private channels | Bot (once invited) or member's user token | `groups:read`, `groups:history` |
-| Group DMs | Member's user token | `mpim:read`, `mpim:history` |
-| 1:1 DMs between people | Member's user token only | `im:read`, `im:history` |
-| Users / user groups | Bot | `users:read`, `users:read.email`, `usergroups:read` |
-| Reactions | Bot / user | included in history payloads (`reactions:read` for the reactions API) |
+<a id="configuration"></a>
 
-A bot token can never read DMs or group DMs between people. To cover those, each member has to authorize the app with user scopes, which gives you one `xoxp-` token per member.
+## ⚙️ Configuration
 
-## Separate Jira and ClickUp connectors
+All keys live in **`.env`**, which is gitignored and never committed.
 
-Platform code is separated under `integrations/`: `jira.py` handles Jira Cloud, `clickup.py` handles ClickUp, and `records.py` defines the shared record and source-link format. Existing Slack ingestion remains in `ingest.py` and its Slack-specific tables remain unchanged. Cross-platform records and explicit mappings use `unified_records` and `unified_record_links` in `unified_schema.sql`.
+| | Variable | Notes |
+|---|---|---|
+| 🗄️ | `DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/slack_intelligence` |
+| 💬 | `SLACK_BOT_TOKEN` | `xoxb-…` bot key |
+| 💬 | `SLACK_USER_TOKENS` | `xoxp-…,xoxp-…`, one per member (needed for DMs) |
+| 💬 | `SLACK_APP_TOKEN` | `xapp-…`, enables instant Socket Mode events |
+| 🎫📘 | `JIRA_BASE_URL` · `JIRA_EMAIL` · `JIRA_API_TOKEN` | one Atlassian admin key, used for Jira **and** Confluence |
+| 🎫 | `JIRA_JQL` | which issues, e.g. `project = KAN ORDER BY updated DESC` |
+| 📘 | `CONFLUENCE_ENABLED` · `CONFLUENCE_SPACE_KEYS` | `true` · e.g. `Agents` (empty = all spaces) |
+| ✅ | `CLICKUP_TEAM_ID` · `CLICKUP_API_TOKEN` | workspace id · admin `pk_…` key |
+| ✅ | `CLICKUP_USER_TOKEN_<NAME>` | one `pk_…` per member (needed for chat DMs) |
+| 🎬 | `JIRA_USER_TOKEN_<NAME>` | `email:token`, used only by the demo to post as other people |
+| 📊 | `FILTER_EMAILS` | people listed in the dashboard's Person filter |
 
-Install the existing dependencies, then add credentials to `.env`:
+<details><summary><b>Optional tuning</b></summary>
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `LOOKBACK_DAYS` | 7 | Slack re-scan window for late replies and edits |
+| `SLACK_AUTO_SYNC` | true | `false` turns off Slack collection in the dashboard |
+| `SLACK_SYNC_INTERVAL_SECONDS` | 60 | fallback polling when `SLACK_APP_TOKEN` is missing |
+| `JIRA_SYNC_INTERVAL_SECONDS` · `CONFLUENCE_SYNC_INTERVAL_SECONDS` · `CLICKUP_SYNC_INTERVAL_SECONDS` | 60 | polling interval (minimum 30) |
+| `CLICKUP_CHAT_LOOKBACK_HOURS` | 24 | re-read window for late chat replies |
+| `DASHBOARD_HOST` · `DASHBOARD_PORT` | 127.0.0.1 · 8000 | dashboard address |
+</details>
+
+---
+
+## 🛠️ Commands
+
+| Do this | Command |
+|---|---|
+| 📊 Dashboard (sync + live view) | `.\.venv\Scripts\python.exe dashboard.py` |
+| 🔍 Check what Slack tokens can read | `.\.venv\Scripts\python.exe ingest.py --check` |
+| 💬 Sync Slack once | `.\.venv\Scripts\python.exe ingest.py` |
+| 🎫 Sync Jira once | `.\.venv\Scripts\python.exe -m integrations.sync jira` |
+| 📘 Sync Confluence once | `.\.venv\Scripts\python.exe -m integrations.sync confluence` |
+| ✅ Sync ClickUp once | `.\.venv\Scripts\python.exe -m integrations.sync clickup` |
+| 🧪 Verify Slack coverage | `.\.venv\Scripts\python.exe verify.py` |
+
+---
+
+<a id="live-demo"></a>
+
+## 🎬 Live demo
+
+<img src="docs/images/live-demo.svg" alt="27-step incident story across Jira, Confluence and ClickUp, each step by a named person" width="100%">
+
+A production-incident story in 27 steps. Each step is posted **as that person** with their own key, then appears on the dashboard within about 2 seconds.
+
+| Do this | Command |
+|---|---|
+| ▶️ Presenter mode (Enter per step) | `.\.venv\Scripts\python.exe live_demo.py` |
+| ⏩ Hands-free | `.\.venv\Scripts\python.exe live_demo.py --auto 10` |
+| 🧹 Remove everything it created | `.\.venv\Scripts\python.exe live_demo.py --cleanup` |
+| 🗂️ One-off sample data | `.\.venv\Scripts\python.exe simulate_demo.py` |
+
+---
+
+<a id="project-structure"></a>
+
+## 📁 Project structure
 
 ```
-JIRA_BASE_URL=https://your-company.atlassian.net
-JIRA_EMAIL=you@example.com
-JIRA_API_TOKEN=...
-CLICKUP_API_TOKEN=...
-CLICKUP_TEAM_ID=...
+slack-message-intelligence/
+├── 📊 dashboard.py          live dashboard, filters, /how-it-works, sync workers, webhook receiver
+├── 💬 ingest.py             Slack collector (bot + user tokens, permalinks)
+├── 🧩 integrations/
+│   ├── records.py           shared UnifiedRecord format
+│   ├── jira.py              Jira connector
+│   ├── confluence.py        Confluence connector
+│   ├── clickup.py           ClickUp connector (tasks + chat)
+│   └── sync.py              stores records · CLI entry point
+├── 🗄️ schema.sql            Slack tables
+├── 🗄️ unified_schema.sql    unified tables + mapping views
+├── 🎬 live_demo.py          27-step live demo (+ --cleanup)
+├── 🎬 simulate_demo.py      one-off sample activity
+├── ✅ verify.py             Slack coverage report
+├── 📖 how_it_works.html     illustrated explainer (served at /how-it-works)
+└── 🖼️ docs/images/          README illustrations
 ```
 
-### Jira
+---
 
-One admin API token is enough: Jira has no private messages, so every comment, mention and change lives on an issue the admin can see. Each sync collects all site users, the issues matched by JQL, every comment, watchers and the change history. The issue acts as the conversation: its reporter, creator, assignee, watchers and commenters are its participants, so they are the recipients of every comment and change on it. `@mentions` in descriptions and comments are mapped to users.
+## 🧱 Scope
 
-Run a one-off import (JQL defaults to `$JIRA_JQL`, else `updated >= -365d ORDER BY updated DESC`):
+| ✅ Collected | 🚫 Not collected | ⏭️ Next |
+|---|---|---|
+| messages · DMs · group chats · threads · comments · inline comments · @mentions · assignments · status changes · page edits | 📞 calls (no transcript API) · 😀 reactions · 📎 attachments · 🗑️ deleted messages | 📧 Outlook · 🟪 Teams (needs Microsoft 365 work tenant) · 🧠 AI skill graph |
 
-```powershell
-.\.venv\Scripts\python.exe -m integrations.sync jira
-.\.venv\Scripts\python.exe -m integrations.sync jira --jql "project = DEMO ORDER BY updated DESC"
-```
+<details><summary><b>⚡ Optional: instant Jira/ClickUp updates with webhooks</b></summary>
 
-When `JIRA_BASE_URL`, `JIRA_EMAIL` and `JIRA_API_TOKEN` are set, `dashboard.py` also polls Jira every `JIRA_SYNC_INTERVAL_SECONDS` (default 60, minimum 30) and shows Jira issues, comments and changes in the same stream as Slack. Query the mapping directly with the `unified_message_map` (sender, recipients, mentions per item) and `unified_person_messages` (sent / received / mentioned per person) views. Users' emails are only returned when their Atlassian profile sets email visibility to "Anyone".
-
-### Confluence
-
-Confluence uses the same Atlassian site, token and account ids as Jira, so no extra credentials are needed. A page or blog post is the conversation: its author, editors, commenters, inline-task assignees and people @mentioned on it are its participants. Page comments, inline comments (with the highlighted text), replies, edits (one event per version) and inline tasks are mapped.
-
-```
-CONFLUENCE_ENABLED=true           # dashboard.py polls Confluence every CONFLUENCE_SYNC_INTERVAL_SECONDS (default 60)
-CONFLUENCE_SPACE_KEYS=Agents      # optional; empty = every readable space, including personal spaces
-```
-
-```powershell
-.\.venv\Scripts\python.exe -m integrations.sync confluence
-```
-
-### ClickUp
-
-Tasks and task comments are shared across the workspace, so `CLICKUP_API_TOKEN` (one workspace member's personal `pk_` token) reads them all. ClickUp Chat channels, DMs and group DMs are only visible to their members, so, like Slack user tokens, add each member's personal token to `CLICKUP_USER_TOKENS` to collect their DMs. Each chat channel is read once, by the first token that can see it.
-
-```
-CLICKUP_API_TOKEN=pk_...                 # workspace admin
-CLICKUP_TEAM_ID=...                      # workspace id: the number after app.clickup.com/ in the URL
-CLICKUP_USER_TOKENS=pk_...,pk_...        # optional: other members, for their DMs and group DMs
-```
-
-A task is the conversation: its creator, assignees, watchers and commenters are its participants. Comments, threaded replies, `@mentions`, assigned comments and reactions are mapped. Chat messages, replies, tagged users and reactions are mapped, with channel members as recipients. The ClickUp Chat API is marked experimental by ClickUp and may change.
-
-```powershell
-.\.venv\Scripts\python.exe -m integrations.sync clickup                 # full read
-.\.venv\Scripts\python.exe -m integrations.sync clickup --incremental   # skip unchanged tasks and channels
-```
-
-`dashboard.py` polls ClickUp every `CLICKUP_SYNC_INTERVAL_SECONDS` (default 60) incrementally, with a full read every 10th run. ClickUp's free plans allow 100 API requests per minute per token; the connector waits and retries when rate limited. Chat messages are re-read for `CLICKUP_CHAT_LOOKBACK_HOURS` (default 24) behind the newest stored message to pick up late replies and reactions.
-
-ClickUp has no task-history API, so status, assignee, priority and due-date changes, with who made them, are only recorded from webhooks.
-
-### Instant updates with webhooks
-
-When `WEBHOOK_TOKEN` is set, `dashboard.py` starts a separate webhook receiver on `127.0.0.1:WEBHOOK_PORT` (default 8001). It only accepts `POST /webhooks/jira/<WEBHOOK_TOKEN>` and `POST /webhooks/clickup/<WEBHOOK_TOKEN>` and re-reads the affected issue or task from the API (or deletes it). The dashboard on port 8000 is not exposed. Polling keeps running as a fallback.
-
-Jira and ClickUp need a public HTTPS URL, so expose port 8001 with a tunnel, e.g. ngrok with a free static domain:
+With `WEBHOOK_TOKEN` set, `dashboard.py` also listens on `127.0.0.1:8001` for `POST /webhooks/jira/<WEBHOOK_TOKEN>` and `POST /webhooks/clickup/<WEBHOOK_TOKEN>`. The dashboard (port 8000) stays private. Expose port 8001 with a tunnel:
 
 ```powershell
 ngrok http 8001 --url=https://<your-static-domain>.ngrok-free.app
 ```
 
-- **Jira:** Settings > System > WebHooks > Create a WebHook. URL `https://<domain>/webhooks/jira/<WEBHOOK_TOKEN>`; events Issue created/updated/deleted and Comment created/updated/deleted; click "Generate secret" and put it in `JIRA_WEBHOOK_SECRET` (verified against `X-Hub-Signature`).
-- **ClickUp:** `.\.venv\Scripts\python.exe -m integrations.sync clickup-webhook --url https://<domain>/webhooks/clickup/<WEBHOOK_TOKEN>` registers a workspace webhook for all events and prints `CLICKUP_WEBHOOK_SECRET` (verified against `X-Signature`).
+- **Jira:** Settings › System › WebHooks: URL `https://<domain>/webhooks/jira/<WEBHOOK_TOKEN>`, Issue and Comment created/updated/deleted, generate a secret into `JIRA_WEBHOOK_SECRET`.
+- **ClickUp:** `.\.venv\Scripts\python.exe -m integrations.sync clickup-webhook --url https://<domain>/webhooks/clickup/<WEBHOOK_TOKEN>`, then put the printed secret in `CLICKUP_WEBHOOK_SECRET`.
 
-Restart `dashboard.py` after changing `.env`.
+ClickUp has no task-history API, so *who* changed a status or assignee is only known through webhooks.
+</details>
 
-These imports preserve native platform IDs and source URLs so records can be linked without conflating Jira and ClickUp IDs.
+<details><summary><b>📝 Notes</b></summary>
+
+- Re-runs are safe: items are upserted, never duplicated, and every source keeps its native IDs and links.
+- ClickUp free plans allow 100 API calls per minute per token; the connector waits and retries.
+- The ClickUp Chat API is marked experimental by ClickUp and may change.
+- Jira search requires bounded JQL; the default is `updated >= -365d ORDER BY updated DESC`.
+</details>
